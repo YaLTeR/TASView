@@ -13,7 +13,7 @@ Shows stuff from BXT (`bxt_interprocess_enable 1`).
 - You will need **32-bit** SDL2 and SDL2_ttf development libraries. Unless SDL2main was fixed, you will need to build it yourself with VS2015 and replace the one bundled with the SDL2 dev package.
 - You will need **32-bit** Boost **date_time**.
 - Create a build directory along the *src* directory.
-- Run `cmake -DBOOST_ROOT=path\to\boost\base\dir -DSDL2_ROOT=path\to\SDL2\base\dir -DSDL2_TTF_ROOT=path\to\SDL2_ttf\base\dir ..`.
+- Run `cmake -DBOOST_ROOT=path\to\boost\base\dir -DSDL2_ROOT=path\to\SDL2\base\dir -DSDL2_TTF_ROOT=path\to\SDL2_ttf\base\dir ..` from the build directory.
 - Open the resulting .sln file and build it.
 
 ####Linux
