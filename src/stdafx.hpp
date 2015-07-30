@@ -18,5 +18,5 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time.hpp>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>

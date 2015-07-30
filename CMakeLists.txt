@@ -1,10 +1,21 @@
 cmake_minimum_required (VERSION 3.1)
 project (TASView)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -march=native -mtune=native -m32 -Ofast -Wall -Wextra -Wno-deprecated-declarations")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-find_package (Boost 1.57.0 REQUIRED COMPONENTS chrono date_time system thread)
-include_directories (${Boost_INCLUDE_DIR})
+if (NOT MSVC)
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -march=native -mtune=native -m32 -Ofast -Wall -Wextra -Wno-deprecated-declarations -Wno-unused-parameter")
+endif ()
+
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+set (Boost_USE_STATIC_LIBS ON)
+find_package (Boost 1.57.0 REQUIRED COMPONENTS date_time)
+include_directories (
+	${Boost_INCLUDE_DIR}
+	${SDL2_INCLUDE_DIR}
+	${SDL2_TTF_INCLUDE_DIR}
+)
 
 set (LIBRARY_OUTPUT_DIRECTORY ".")
 set (SOURCE_FILES
@@ -18,7 +29,16 @@ set (SOURCE_FILES
 	src/Blocks/Time.cpp
 	src/Blocks/Clips.cpp
 	src/Blocks/Framerate.cpp
-	src/Blocks/Water.cpp)
+	src/Blocks/Water.cpp
+)
 
 add_executable (TASView ${SOURCE_FILES})
-target_link_libraries (TASView ${Boost_LIBRARIES} pthread rt SDL2 SDL2main SDL2_ttf)
+target_link_libraries (TASView
+	${SDL2_LIBRARY}
+	${SDL2_TTF_LIBRARY}
+	${Boost_LIBRARIES}
+)
+
+if (NOT MSVC)
+	target_link_libraries (TASView pthread rt)
+endif ()
