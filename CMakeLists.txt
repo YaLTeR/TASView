@@ -30,6 +30,7 @@ set (SOURCE_FILES
 	src/Blocks/Clips.cpp
 	src/Blocks/Framerate.cpp
 	src/Blocks/Water.cpp
+	src/Blocks/Remainder.cpp
 )
 
 add_executable (TASView ${SOURCE_FILES})

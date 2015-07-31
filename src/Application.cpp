@@ -3,7 +3,9 @@
 #include "Blocks/Clips.hpp"
 #include "Blocks/Time.hpp"
 #include "Blocks/Framerate.hpp"
-#include "MessageThread.h"
+#include "Blocks/Water.hpp"
+#include "Blocks/Remainder.hpp"
+#include "MessageThread.hpp"
 
 Application::~Application() {
 	std::cerr << "Application::~Application()\n";
@@ -38,10 +40,12 @@ int Application::Init() {
 	_blockTime = std::make_shared<Time>();
 	_blockClips = std::make_shared<Clips>();
 	_blockWater = std::make_shared<Water>();
+	_blockRemainder = std::make_shared<Remainder>();
 	_blocks.push_back(BlockRegion{ _blockTime, SDL_Rect{ 0, 0, 320, 100 } });
 	_blocks.push_back(BlockRegion{ std::unique_ptr<Block>(new Framerate()), SDL_Rect{ 0, 0, 100, 100 } });
 	_blocks.push_back(BlockRegion{ _blockClips, SDL_Rect{ 0, 100, 320, 100 } });
 	_blocks.push_back(BlockRegion{ _blockWater, SDL_Rect{ 0, 230, 320, 100 } });
+	_blocks.push_back(BlockRegion{ _blockRemainder, SDL_Rect{ 0, 250, 320, 100 } });
 
 	std::timed_mutex running;
 	running.lock();

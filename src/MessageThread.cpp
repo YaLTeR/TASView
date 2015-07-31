@@ -1,5 +1,13 @@
 #include "stdafx.hpp"
+#include "MessageThread.hpp"
 #include "Application.hpp"
+
+enum class MessageType : unsigned char {
+	TIME = 0x00,
+	CLIP = 0x01,
+	WATER = 0x02,
+	FRAMETIME_REMAINDER = 0x03
+};
 
 void MessageThread(const Application *app, std::timed_mutex &m) {
 	using namespace std::chrono;
@@ -31,7 +39,7 @@ void MessageThread(const Application *app, std::timed_mutex &m) {
 					}
 
 					switch (buf[1]) {
-					case 0x00:
+					case MessageType::TIME:
 					{ // Time data.
 						int32_t hours, minutes, seconds, milliseconds;
 						std::memcpy(&hours, buf + 2, sizeof(hours));
@@ -42,7 +50,7 @@ void MessageThread(const Application *app, std::timed_mutex &m) {
 						//std::cerr << "Received time! " << hours << " " << minutes << " " << seconds << " " << milliseconds << "\n";
 					} break;
 
-					case 0x01:
+					case MessageType::CLIP:
 					{ // Clip data.
 						float normalz, in[3], out[3];
 						std::memcpy(&normalz, buf + 2, sizeof(normalz));
@@ -52,9 +60,16 @@ void MessageThread(const Application *app, std::timed_mutex &m) {
 						//std::cerr << "Received clip! " << normalz << "\n";
 					} break;
 
-					case 0x02:
+					case MessageType::WATER:
 					{ // Water frame.
 						app->GetBlockWater()->WaterFrame();
+					} break;
+
+					case MessageType::FRAMETIME_REMAINDER:
+					{
+						double remainder;
+						std::memcpy(&remainder, buf + 2, 8);
+						app->GetBlockRemainder()->SetRemainder(remainder);
 					} break;
 					}
 				}
