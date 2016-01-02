@@ -31,7 +31,6 @@ public:
 private:
 	void MainLoop();
 	void ProcessEvents();
-	void ReadMessages();
 	void Draw();
 
 	Window _window;

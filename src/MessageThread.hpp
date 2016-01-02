@@ -2,4 +2,4 @@
 
 #include "Application.hpp"
 
-void MessageThread(const Application *app, std::timed_mutex &m);
+void MessageThread(const Application *app, HANDLE stopRunning);

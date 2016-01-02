@@ -47,14 +47,21 @@ int Application::Init() {
 	_blocks.push_back(BlockRegion{ _blockWater, SDL_Rect{ 0, 230, 320, 100 } });
 	_blocks.push_back(BlockRegion{ _blockRemainder, SDL_Rect{ 0, 250, 320, 100 } });
 
-	std::timed_mutex running;
-	running.lock();
-	std::thread messageThread(MessageThread, this, std::ref(running));
+	auto stopRunning = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if (!stopRunning) {
+		std::cerr << "CreateEvent failed: " << GetLastError() << "\n";
+		return 1;
+	}
+	std::thread messageThread(MessageThread, this, stopRunning);
 
 	MainLoop();
 
-	running.unlock();
-	messageThread.join();
+	if (SetEvent(stopRunning)) {
+		messageThread.join();
+	} else {
+		std::cerr << "SetEvent failed: " << GetLastError() << "\n";
+		messageThread.detach();
+	}
 
 	return 0;
 }
@@ -93,10 +100,6 @@ void Application::ProcessEvents() {
 			}
 		}
 	}
-}
-
-void Application::ReadMessages() {
-	
 }
 
 void Application::Draw() {

@@ -23,6 +23,7 @@ set (SOURCE_FILES
 	src/Window.cpp
 	src/Texture.cpp
 	src/Block.cpp
+	src/MessageQueue.cpp
 	src/MessageThread.cpp
 	src/Application.cpp
 	src/TASView.cpp
@@ -40,6 +41,8 @@ target_link_libraries (TASView
 	${Boost_LIBRARIES}
 )
 
-if (NOT MSVC)
+if (MSVC)
+	set_target_properties (TASView PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+else ()
 	target_link_libraries (TASView pthread rt)
 endif ()
