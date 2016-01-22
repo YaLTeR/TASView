@@ -1,4 +1,4 @@
-#include "stdafx.hpp"
+#include "../../stdafx.hpp"
 #include "MessageQueue.hpp"
 
 using namespace std;

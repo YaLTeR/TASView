@@ -92,6 +92,12 @@
 # (To distribute this file outside of CMake, substitute the full
 # License text for the above reference.)
 
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	SET(WinLibSuffix "lib/x64")
+ELSE()
+	SET(WinLibSuffix "lib/x86")
+ENDIF()
+
 FIND_PATH(SDL2_TTF_INCLUDE_DIR SDL_ttf.h
 	HINTS
 	${SDL2}
@@ -119,7 +125,7 @@ FIND_LIBRARY(SDL2_TTF_LIBRARY_TEMP
 	$ENV{SDL2}
 	$ENV{SDL2_TTF}
 	PATH_SUFFIXES lib32 lib
-	lib/x86
+	${WinLibSuffix}
 	i686-w64-mingw32/lib
 	PATHS
 	/sw

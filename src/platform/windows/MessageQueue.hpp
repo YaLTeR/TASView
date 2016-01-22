@@ -8,7 +8,7 @@ public:
 	MessageQueue& operator=(const MessageQueue&) = delete;
 
 	template<typename rep, typename period>
-	bool timed_read(std::vector<unsigned char>& data, std::chrono::duration<rep, period> timeout, DWORD& bytesRead, HANDLE additionalEvent);
+	bool timed_read(std::vector<char>& data, std::chrono::duration<rep, period> timeout, DWORD& bytesRead, HANDLE additionalEvent);
 
 private:
 	HANDLE pipe;
@@ -17,14 +17,14 @@ private:
 };
 
 template<typename rep, typename period>
-bool MessageQueue::timed_read(std::vector<unsigned char>& data, std::chrono::duration<rep, period> timeout, DWORD& bytes_read, HANDLE additionalEvent)
+bool MessageQueue::timed_read(std::vector<char>& data, std::chrono::duration<rep, period> timeout, DWORD& bytes_read, HANDLE additionalEvent)
 {
 	using namespace std;
 	using namespace std::chrono;
 
 	// If we aren't already waiting, start a new read.
 	if (!waiting_for_completion) {
-		if (ReadFile(pipe, data.data(), data.size(), &bytes_read, &overlapped)) {
+		if (ReadFile(pipe, data.data(), static_cast<DWORD>(data.size()), &bytes_read, &overlapped)) {
 			// Read completed immediately.
 			return true;
 		} else {

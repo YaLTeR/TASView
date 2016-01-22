@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include "Window.hpp"
 #include "Renderer.hpp"
 #include "Block.hpp"
@@ -22,11 +19,7 @@ public:
 	~Application();
 
 	int Init();
-
-	inline std::shared_ptr<Time> GetBlockTime() const { return _blockTime; };
-	inline std::shared_ptr<Clips> GetBlockClips() const { return _blockClips; };
-	inline std::shared_ptr<Water> GetBlockWater() const { return _blockWater; };
-	inline std::shared_ptr<Remainder> GetBlockRemainder() const { return _blockRemainder; };
+	void ParseMessage(const std::vector<char>& buf, size_t bytesRead);
 
 private:
 	void MainLoop();

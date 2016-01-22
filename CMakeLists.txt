@@ -4,13 +4,13 @@ project (TASView)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 if (NOT MSVC)
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -march=native -mtune=native -m32 -Ofast -Wall -Wextra -Wno-deprecated-declarations -Wno-unused-parameter")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -march=native -mtune=native -Ofast -Wall -Wextra -Wno-deprecated-declarations -Wno-unused-parameter")
 endif ()
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 set (Boost_USE_STATIC_LIBS ON)
-find_package (Boost 1.57.0 REQUIRED COMPONENTS date_time)
+find_package (Boost 1.57.0 REQUIRED)
 include_directories (
 	${Boost_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
@@ -18,13 +18,18 @@ include_directories (
 )
 
 set (LIBRARY_OUTPUT_DIRECTORY ".")
+set (WINDOWS_FILES
+	src/platform/windows/IPC.cpp
+	src/platform/windows/MessageQueue.cpp
+)
+set (POSIX_FILES
+	src/platform/posix/IPC.cpp
+)
 set (SOURCE_FILES
 	src/Renderer.cpp
 	src/Window.cpp
 	src/Texture.cpp
 	src/Block.cpp
-	src/MessageQueue.cpp
-	src/MessageThread.cpp
 	src/Application.cpp
 	src/TASView.cpp
 	src/Blocks/Time.cpp
@@ -33,6 +38,12 @@ set (SOURCE_FILES
 	src/Blocks/Water.cpp
 	src/Blocks/Remainder.cpp
 )
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	set (SOURCE_FILES ${SOURCE_FILES} ${WINDOWS_FILES})
+else ()
+	set (SOURCE_FILES ${SOURCE_FILES} ${POSIX_FILES})
+endif ()
 
 add_executable (TASView ${SOURCE_FILES})
 target_link_libraries (TASView

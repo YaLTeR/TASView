@@ -69,6 +69,12 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	SET(WinLibSuffix "lib/x64")
+ELSE()
+	SET(WinLibSuffix "lib/x86")
+ENDIF()
+
 SET(SDL2_SEARCH_PATHS
 	~/Library/Frameworks
 	/Library/Frameworks
@@ -95,7 +101,7 @@ FIND_LIBRARY(SDL2_LIBRARY_TEMP
 	NAMES SDL2
 	HINTS
 	$ENV{SDL2DIR}
-	PATH_SUFFIXES lib32 lib lib/x86
+	PATH_SUFFIXES lib32 lib ${WinLibSuffix}
 	PATHS ${SDL2_SEARCH_PATHS}
 )
 
@@ -109,7 +115,7 @@ IF(NOT SDL2_BUILDING_LIBRARY)
 			NAMES SDL2main
 			HINTS
 			$ENV{SDL2DIR}
-			PATH_SUFFIXES lib32 lib lib/x86
+			PATH_SUFFIXES lib32 lib ${WinLibSuffix}
 			PATHS ${SDL2_SEARCH_PATHS}
 		)
 	ENDIF(NOT ${SDL2_INCLUDE_DIR} MATCHES ".framework")

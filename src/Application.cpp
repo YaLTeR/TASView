@@ -5,7 +5,10 @@
 #include "Blocks/Framerate.hpp"
 #include "Blocks/Water.hpp"
 #include "Blocks/Remainder.hpp"
-#include "MessageThread.hpp"
+#include "IPC.hpp"
+#include "Shared.hpp"
+
+using namespace std;
 
 Application::~Application() {
 	std::cerr << "Application::~Application()\n";
@@ -47,23 +50,56 @@ int Application::Init() {
 	_blocks.push_back(BlockRegion{ _blockWater, SDL_Rect{ 0, 230, 320, 100 } });
 	_blocks.push_back(BlockRegion{ _blockRemainder, SDL_Rect{ 0, 250, 320, 100 } });
 
-	auto stopRunning = CreateEvent(NULL, TRUE, FALSE, NULL);
-	if (!stopRunning) {
-		std::cerr << "CreateEvent failed: " << GetLastError() << "\n";
-		return 1;
-	}
-	std::thread messageThread(MessageThread, this, stopRunning);
+	IPC::StartReceivingMessages(this);
 
 	MainLoop();
 
-	if (SetEvent(stopRunning)) {
-		messageThread.join();
-	} else {
-		std::cerr << "SetEvent failed: " << GetLastError() << "\n";
-		messageThread.detach();
-	}
+	IPC::StopReceivingMessages();
 
 	return 0;
+}
+
+void Application::ParseMessage(const std::vector<char>& buf, size_t bytesRead)
+{
+	if (bytesRead < 2 || static_cast<uint8_t>(buf[0]) != bytesRead) {
+		cerr << "Received less than 2 bytes or less bytes than buf[0]!\n";
+		return;
+	}
+
+	switch (static_cast<MessageType>(buf[1])) {
+	case MessageType::TIME:
+	{ // Time data.
+		int32_t hours, minutes, seconds, milliseconds;
+		memcpy(&hours, buf.data() + 2, sizeof(hours));
+		memcpy(&minutes, buf.data() + 6, sizeof(minutes));
+		memcpy(&seconds, buf.data() + 10, sizeof(seconds));
+		memcpy(&milliseconds, buf.data() + 14, sizeof(milliseconds));
+		_blockTime->SetTime(hours, minutes, seconds, milliseconds);
+		//cerr << "Received time! " << hours << " " << minutes << " " << seconds << " " << milliseconds << "\n";
+	} break;
+
+	case MessageType::CLIP:
+	{ // Clip data.
+		float normalz, in[3], out[3];
+		memcpy(&normalz, buf.data() + 2, sizeof(normalz));
+		memcpy(in, buf.data() + 6, sizeof(in));
+		memcpy(out, buf.data() + 18, sizeof(out));
+		_blockClips->AddClip(normalz, in, out);
+		//cerr << "Received clip! " << normalz << "\n";
+	} break;
+
+	case MessageType::WATER:
+	{ // Water frame.
+		_blockWater->WaterFrame();
+	} break;
+
+	case MessageType::FRAMETIME_REMAINDER:
+	{
+		double remainder;
+		memcpy(&remainder, buf.data() + 2, 8);
+		_blockRemainder->SetRemainder(remainder);
+	} break;
+	}
 }
 
 void Application::MainLoop() {
