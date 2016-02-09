@@ -69,11 +69,13 @@ void Application::ParseMessage(const std::vector<char>& buf, size_t bytesRead)
 	switch (static_cast<MessageType>(buf[1])) {
 	case MessageType::TIME:
 	{ // Time data.
-		int32_t hours, minutes, seconds, milliseconds;
+		int32_t hours;
+		uint8_t minutes, seconds;
+		uint16_t milliseconds;
 		memcpy(&hours, buf.data() + 2, sizeof(hours));
 		memcpy(&minutes, buf.data() + 6, sizeof(minutes));
-		memcpy(&seconds, buf.data() + 10, sizeof(seconds));
-		memcpy(&milliseconds, buf.data() + 14, sizeof(milliseconds));
+		memcpy(&seconds, buf.data() + 7, sizeof(seconds));
+		memcpy(&milliseconds, buf.data() + 8, sizeof(milliseconds));
 		_blockTime->SetTime(hours, minutes, seconds, milliseconds);
 		//cerr << "Received time! " << hours << " " << minutes << " " << seconds << " " << milliseconds << "\n";
 	} break;

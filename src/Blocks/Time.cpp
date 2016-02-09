@@ -58,10 +58,11 @@ void Time::UpdateTexture(SDL_Renderer *renderer, int hours, int minutes, int sec
 
 	std::ostringstream oss;
 	oss.fill('0');
-	if (hours)
-		oss << hours << ":" << std::setw(2);
-	if (minutes)
+	if (hours) {
+		oss << hours << ":" << std::setw(2) << minutes << ":" << std::setw(2);
+	} else if (minutes) {
 		oss << minutes << ":" << std::setw(2);
+	}
 	oss << seconds << "." << std::setw(3) << milliseconds;
 	auto surface = TTF_RenderText_Blended(_font, oss.str().c_str(), SDL_Color{ 0, 0, 0 });
 	//auto surface = TTF_RenderText_Shaded(_font, oss.str().c_str(), SDL_Color{ 0, 0, 0 }, SDL_Color{ 255, 255, 255 });
