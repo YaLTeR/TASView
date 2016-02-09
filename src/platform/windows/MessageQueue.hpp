@@ -53,7 +53,7 @@ bool MessageQueue::timed_read(std::vector<char>& data, std::chrono::duration<rep
 	}
 
 	// If we got here then read must be completed.
-	if (GetOverlappedResultEx(pipe, &overlapped, &bytes_read, 0, FALSE)) {
+	if (GetOverlappedResult(pipe, &overlapped, &bytes_read, FALSE)) {
 		// Read completed.
 		waiting_for_completion = false;
 		return true;
